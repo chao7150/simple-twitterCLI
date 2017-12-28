@@ -1,7 +1,34 @@
 require "twitter"
 require "thread"
-require "./auth"
+require "oauth"
+
 ENV["SSL_CERT_FILE"] = "ssl"
+
+$CONSUMER_KEY       = '41fEYpctnCXzxUsuYR9jlnY9q'
+$CONSUMER_SECRET    = 'LXSy878XkbJjx5z3lC9RTQBel68p8kaWAGdG3QfadlGZwgI4sN'
+
+if !File.exist?('auth.rb') then
+  puts "login process starts"
+  consumer_key = $CONSUMER_KEY
+  consumer_secret = $CONSUMER_SECRET
+  consumer = OAuth::Consumer.new consumer_key, consumer_secret, site: "https://api.twitter.com"
+
+  request_token = consumer.get_request_token
+
+  puts "Please visit here: #{request_token.authorize_url}"
+  STDERR.print "Then input your PIN: "
+
+  access_token = request_token.get_access_token oauth_verifier: gets.chomp
+  $OAUTH_TOKEN = access_token.token
+  $OAUTH_TOKEN_SECRET = access_token.secret
+  File.open('auth.rb', 'w') do |text|
+    text.puts('$OAUTH_TOKEN = ' + '"' + $OAUTH_TOKEN + '"')
+    text.puts('$OAUTH_TOKEN_SECRET = ' + '"' + $OAUTH_TOKEN_SECRET + '"')
+  end
+  else
+  require "./auth"
+end
+
 
 client_rest = Twitter::REST::Client.new do |config|
   config.consumer_key        = $CONSUMER_KEY
@@ -16,6 +43,8 @@ client_stream = Twitter::Streaming::Client.new do |config|
   config.access_token        = $OAUTH_TOKEN
   config.access_token_secret = $OAUTH_TOKEN_SECRET
 end
+
+puts 'input "h" to read help'
 
 tweets = []
 number = 1
@@ -52,6 +81,16 @@ loop do
     args.each do |id|
       client_rest.follow(tweets[id.to_i - 1].user.id)
     end
+    puts
+  when 'help', 'h'
+    puts 'This is help.'
+    puts 'Basic syntax: command + arg'
+    puts '---commands---'
+    puts '"tweet" or "t" to tweet.          arg:tweet content without quotations'
+    puts '"fav" or "favorite" to favorite.  arg:tweet number(s)'
+    puts '"rt", "RT" or "r" to retweet.     arg:tweet number(s)'
+    #puts '"follow" to follow.               arg:tweet number(s)'
+    puts '"exit" or "e" to exit.            arg:not required'
     puts
   when 'exit', 'e'
     exit()
