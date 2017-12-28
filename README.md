@@ -1,5 +1,7 @@
 # simple-twitterCLI
 ## how to use
+
+Ruby need to be in PATH.
 ```
 git clone https://github.com/chao7150/simple-twitterCLI.git
 cd simple-twitterCLI
