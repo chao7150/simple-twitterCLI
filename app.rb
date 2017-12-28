@@ -7,6 +7,7 @@ ENV["SSL_CERT_FILE"] = "ssl"
 $CONSUMER_KEY       = '41fEYpctnCXzxUsuYR9jlnY9q'
 $CONSUMER_SECRET    = 'LXSy878XkbJjx5z3lC9RTQBel68p8kaWAGdG3QfadlGZwgI4sN'
 
+#Copied and modified from https://qiita.com/johnny-miyake/items/a432cc4fea3b1b8c6b1e
 if !File.exist?('auth.rb') then
   puts "login process starts"
   consumer_key = $CONSUMER_KEY
@@ -29,7 +30,7 @@ if !File.exist?('auth.rb') then
   require "./auth"
 end
 
-
+#Copied and modified from https://qiita.com/owata/items/fb25faf71124eaa3cb14
 client_rest = Twitter::REST::Client.new do |config|
   config.consumer_key        = $CONSUMER_KEY
   config.consumer_secret     = $CONSUMER_SECRET
